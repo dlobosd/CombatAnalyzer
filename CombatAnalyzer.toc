@@ -1,0 +1,41 @@
+## Interface: 120100, 50504, 40402, 30405, 20506, 11509
+## Title: Combat Analyzer
+## Notes: Combat performance analyzer (Retail + Classic)
+## Author: OpenAI
+## Version: 0.1.0
+## SavedVariables: CombatAnalyzerDB
+
+# ---------------------------------------------------------------------------
+# Interface: comma-delimited list so a single TOC covers every currently
+# live client flavor without needing separate _Mainline / _Classic TOC files:
+#   120100 -> Retail / Mainline
+#    50504 -> Classic Progression (Mists of Pandaria Classic)
+#    40402 -> Classic Progression (Cataclysm Classic, still installed by some users)
+#    30405 -> Classic Progression (Wrath Classic / Titan Reforged)
+#    20506 -> Classic Progression (Burning Crusade Classic)
+#    11509 -> Classic Era (Vanilla)
+# Update these numbers as Blizzard ships new patches; an outdated number only
+# triggers the cosmetic "out of date" flag, it never blocks loading.
+# ---------------------------------------------------------------------------
+
+# Shared core: version detection, data model, combat lifecycle, slash commands.
+Core.lua
+
+# Shared combat-log normalization/dispatch layer (client-agnostic).
+CombatLog.lua
+
+# Data-acquisition layer: exactly one of these two loads, chosen by the
+# client itself via the AllowLoadGameType conditional directive. Neither
+# file is even parsed on the "wrong" client, so we never risk registering
+# an event or calling an API that doesn't exist there.
+CombatLog_Retail.lua [AllowLoadGameType mainline]
+CombatLog_Classic.lua [AllowLoadGameType classic]
+
+# Analysis modules: operate only on the normalized structure produced above,
+# so none of them need to know whether they're running on Retail or Classic.
+Damage.lua
+Buffs.lua
+Interrupts.lua
+Deaths.lua
+Timeline.lua
+UI.lua
