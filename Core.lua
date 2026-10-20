@@ -149,8 +149,9 @@ f:SetScript("OnEvent", function(_, event)
     elseif event == "PLAYER_REGEN_DISABLED" then
         CA:StartCombat("PLAYER_REGEN_DISABLED")
     elseif event == "PLAYER_REGEN_ENABLED" then
+        local combat = CA.current
         C_Timer.After(3, function()
-            if not UnitAffectingCombat("player") then
+            if CA.current == combat and not UnitAffectingCombat("player") then
                 CA:EndCombat("PLAYER_REGEN_ENABLED")
             end
         end)
