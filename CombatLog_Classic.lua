@@ -55,7 +55,16 @@ function CL:InitClassic()
     f:SetScript("OnEvent", function()
         local timestamp, subEvent, _, sourceGUID, sourceName, sourceFlags,
               _, destGUID, destName, destFlags, _, spellID, spellName,
-              spellSchool, amount, overkill = CombatLogGetCurrentEventInfo()
+              spellSchool, amount, overkill, damageSchool, resisted, blocked,
+              absorbed, critical = CombatLogGetCurrentEventInfo()
+
+        -- SWING_DAMAGE has no spell prefix: amount starts at field 12,
+        -- and its critical flag occupies field 18 (resisted above).
+        if subEvent == "SWING_DAMAGE" then
+            critical = resisted
+            amount, overkill = spellID, spellName
+            spellID, spellName, spellSchool = nil, nil, nil
+        end
 
         CL:Dispatch({
             subEvent = subEvent,
@@ -70,6 +79,7 @@ function CL:InitClassic()
             spellSchool = spellSchool,
             amount = amount,
             overkill = overkill,
+            critical = critical,
         })
     end)
     self._classicFrame = f
