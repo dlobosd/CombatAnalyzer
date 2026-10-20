@@ -104,7 +104,9 @@ function CA:EndCombat(reason)
 end
 
 function CA:Reset()
-    self.history = {}
+    for i = #self.history, 1, -1 do
+        self.history[i] = nil
+    end
     self.current = nil
     self.inCombat = false
     self:Print("Combat history reset.")
@@ -133,7 +135,8 @@ f:RegisterEvent("PLAYER_REGEN_ENABLED")
 f:SetScript("OnEvent", function(_, event)
     if event == "PLAYER_LOGIN" then
         CombatAnalyzerDB = CombatAnalyzerDB or {history = {}}
-        CA.history = CombatAnalyzerDB.history or {}
+        CombatAnalyzerDB.history = CombatAnalyzerDB.history or {}
+        CA.history = CombatAnalyzerDB.history
 
         -- Select and start the data-acquisition layer that matches this
         -- client. CA.CombatLog.Init dispatches to InitRetail/InitClassic,
